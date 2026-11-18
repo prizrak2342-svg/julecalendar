@@ -1,0 +1,26 @@
+{
+  "name": "julekalendar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file=.env app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "argon2": "^0.45.2",
+    "connect-mongo": "^6.0.0",
+    "ejs": "^7.0.2",
+    "express": "^5.1.0",
+    "express-session": "^1.19.0",
+    "mongodb": "^7.9.0",
+    "mongoose": "^9.12.2"
+  },
+  "allowScripts": {
+    "argon2@0.45.2": true
+  }
+}

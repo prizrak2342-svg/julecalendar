@@ -1,0 +1,99 @@
+/* Shared header, footer and typography are defined in style.css. */
+/* Add calendar-specific styles here as the calendar is built. */
+.calendar-main {
+    padding: 48px 24px;
+    background-color: #f7f1e7;
+
+}
+
+.calendar-intro {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.calendar-intro h1 {
+    margin: 0 0 12px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+}
+
+.calendar-intro p {
+    margin: 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(6,minmax(0,1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.calendar-door {
+    min-height: 200px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    color: #174d35;
+}
+
+.door-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.door-month {
+    margin-top: 8px;
+    font-size: 1.2rem;
+}
+
+.door-number,
+.door-month {
+    padding: 4px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #174d35;
+}
+
+.gift-1 {
+    background-image: url("/img/gift1.png");
+}
+
+.gift-2 {
+    background-image: url("/img/gift2.png");
+}
+
+.gift-3 {
+    background-image: url("/img/gift3.png");
+}
+
+@media (max-width: 900px) {
+    .calendar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .calendar-main {
+        padding: 32px 16px;
+    }
+}
+
+@media (max-width: 400px) {
+    .calendar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+

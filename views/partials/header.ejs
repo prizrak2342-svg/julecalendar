@@ -1,0 +1,15 @@
+<a class="skip-link" href="#main-content">Hopp til innhold</a>
+<header class="header">
+    <a class="logo" href="/">
+        <img src="/img/log.png" alt="Julekalender – hjem">
+    </a>
+    <nav aria-label="Hovedmeny">
+        <ul class="nav-list">
+            <li><a href="/"<% if (activePage === 'home') { %> aria-current="page"<% } %>>Hjem</a></li>
+            <li><a href="/about"<% if (activePage === 'about') { %> aria-current="page"<% } %>>Om oss</a></li>
+            <li><a href="/contact"<% if (activePage === 'contact') { %> aria-current="page"<% } %>>Kontakt</a></li>
+            <li><a href="/service"<% if (activePage === 'service') { %> aria-current="page"<% } %>>Profil</a></li>
+            <li><a href="/calendar"<% if (activePage === 'calendar') { %> aria-current="page"<% } %>>Julekalender</a></li>
+        </ul>
+    </nav>
+</header>

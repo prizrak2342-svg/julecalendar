@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="nb">
+<%- include('partials/head') %>
+<body>
+    <%- include('partials/header') %>
+    <main id="main-content" class="calendar-main" tabindex="-1">
+        <section class="container" aria-labelledby="calendar-title">
+            <div class="calendar-intro">
+                <h1 id="calendar-title">Julekalender fortuna </h1>
+                <p>
+                    Velkommen til skolens julekalender.
+                    Vi teller ned til jul sammen!
+                </p>
+            </div>
+            <ol class="calendar-grid">
+                <% for (let day = 1; day <= 24; day++) { %>
+                    <% const gift = Math.floor(Math.random() * 3) + 1; %>
+
+                    <li class="calendar-door gift-<%= gift %>">
+                        <span class="door-number"><%= day %></span>
+                        <span class="door-month">Desember</span>
+                    </li>
+                <% } %>
+            </ol>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

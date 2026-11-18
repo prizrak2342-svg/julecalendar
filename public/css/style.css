@@ -1,0 +1,299 @@
+body {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+margin: 0;
+background-color: #f4f8f5;
+color: #174d35;
+font-family: "Nunito", sans-serif;
+font-size: 1rem;
+line-height: 1.6;
+
+}
+
+.header {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 12px 32px;
+    background-color:  #f8f8f8;
+    border-bottom: 1px solid  #c7c7c7;
+
+}
+
+.logo {
+    display: flex;
+    flex-shrink: 0;
+
+}
+
+.logo img {
+    display : block;
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+
+}
+
+.nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Shared page layout keeps the footer below short pages. */
+body > main {
+    flex: 1;
+}
+
+.header,
+.site-footer {
+    flex-shrink: 0;
+}
+
+.header nav,
+.footer-top > * {
+    min-width: 0;
+}
+
+.logo {
+    max-width: 100%;
+}
+
+.skip-link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    padding: 12px;
+    background: #ffffff;
+    color: #174d35;
+    transform: translateY(-200%);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+    outline: 3px solid #174d35;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.nav-list a {
+    display: block;
+    padding: 12px;
+    border-radius: 6px;
+    color: #174d35;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.nav-list a:hover,
+.nav-list a[aria-current="page"] {
+    background-color: #e8f1eb;
+}
+
+.header a:focus-visible {
+    outline: 3px solid #174d35;
+    outline-offset: 4px;
+}
+
+@media (max-width: 700px) {
+    .header {
+        padding: 16px;
+    }
+
+    .header nav {
+        width: 100%;
+    }
+
+}
+
+/* Include padding and borders in element dimensions. */
+* {
+    box-sizing: border-box;
+}
+
+/* Shared section layout. */
+.section {
+    padding: 80px 24px;
+}
+
+.container {
+    max-width: 1120px;
+    margin-inline: auto;
+}
+
+.section h1,
+.section h2 {
+    margin: 0 0 20px;
+    line-height: 1.15;
+}
+
+.section h1 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.section h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.section p {
+    max-width: 600px;
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+/* First section: a decorative background photo. */
+.hero {
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    background-color: #e9dfd0;
+    background-image:
+        linear-gradient(
+            to right,
+            rgba(247, 241, 231, 0.95),
+            rgba(247, 241, 231, 0.1)
+        ),
+        url("/img/main.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.hero .container {
+    width: 100%;
+}
+
+.hero-content {
+    max-width: 500px;
+}
+
+.hero-link {
+    display: inline-block;
+    margin-top: 28px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    background-color: #174d35;
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.hero-link:hover {
+    background-color: #103824;
+}
+
+.hero-link:focus-visible {
+    outline: 3px solid #174d35;
+    outline-offset: 4px;
+}
+
+/* Second and third sections. */
+.introduction {
+    background-color: #f7f1e7;
+}
+
+.information {
+    background-color: #174d35;
+    color: #ffffff;
+}
+
+@media (max-width: 700px) {
+    .section {
+        padding: 48px 20px;
+    }
+
+    .hero {
+        min-height: 420px;
+        background-image:
+            linear-gradient(
+                rgba(247, 241, 231, 0.9),
+                rgba(247, 241, 231, 0.9)
+            ),
+            url("/img/main.png");
+    }
+}
+
+/* Footer layout and colors. */
+.site-footer {
+    padding: 40px 24px 20px;
+    background-color: #f7f1e7;
+    color: #174d35;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+}
+
+.footer-brand img {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+}
+
+.footer-brand p {
+    margin: 12px 0 0;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-links a {
+    display: inline-block;
+    padding-block: 12px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.site-footer a:focus-visible {
+    outline: 3px solid #174d35;
+    outline-offset: 4px;
+}
+
+.footer-bottom {
+    margin: 28px 0 0;
+    padding-top: 20px;
+    border-top: 1px solid #d8d2c6;
+}
+
+@media (max-width: 700px) {
+    .site-footer {
+        padding-inline: 20px;
+    }
+
+    .footer-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+}
+
