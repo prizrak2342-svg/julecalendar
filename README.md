@@ -1,74 +1,132 @@
 # Julekalender
 
-A digital advent calendar for the school. Students will open available doors, view teacher-provided content, and submit answers. Administrators will manage content, review answers, and select winners.
+A Christmas advent calendar for our school. From 1 to 24 December a new door opens every day. Behind it there is a short text, a picture or a video, and a question. Students answer, teachers check the answers, and one random winner is picked among the correct ones. When a day has passed, its door shows who won.
 
-**Status (16 November 2026):** the repository contains an Express server and a basic EJS home page. Calendar doors, accounts, answer submission, MongoDB, the administrator dashboard, and server deployment are planned and are not implemented yet.
+This is my individual school project. The full assignment is in [documents/Julekalender.pdf](documents/Julekalender.pdf).
 
-## Technologies
+**Where the project is now (27 November):** the website, the pages and the calendar layout are done, and the app is connected to MongoDB with users, password hashing and sessions. Opening doors, answering, logging in and the admin area are what I'm building next. See the [project plan](docs/project-plan.md) for the steps.
 
-| Technology | Current use |
-| --- | --- |
-| Node.js and npm | JavaScript runtime and dependency management |
-| Express | Web server and the `/` route |
-| EJS | Server-rendered home page |
-| HTML and CSS | HTML template; the existing CSS file is empty |
-| MongoDB | Required and planned; no driver, models, or connection yet |
-| Git, GitHub, GitHub Projects | Local Git repository exists; remote repository and project setup are not verified |
-| Linux and PM2 | Planned deployment environment and process management |
+## What it can do
 
-## Folder structure
+For students:
+
+- See all 24 doors on one page, on a phone or a computer
+- Open today's door and earlier doors, but not future ones *(in progress)*
+- Read the text, look at the picture or video, and answer the question *(in progress)*
+- See who won on past doors *(in progress)*
+- Create an account *(the form is ready, saving is in progress)*
+
+For teachers (admins), all in progress:
+
+- See all answers and mark them correct or wrong
+- See who has signed up
+- Edit the content of each door
+- Pick a random winner with one click
+- Extra: search and filter answers
+
+## Built with
+
+- **Node.js** and **Express 5**: the web server
+- **EJS**: HTML pages rendered on the server
+- **HTML and CSS**: layout and the Christmas look
+- **MongoDB** with **Mongoose**: the database
+- **express-session** and **connect-mongo**: logins that are stored in the database
+- **argon2**: safe password hashing
+- **Git, GitHub and GitHub Projects**: code and planning
+- **Linux, PM2 and nginx**: running it on the server
+
+## How the folders are organised
 
 ```text
-.
-├── app.js                 # Express entry point; listens on port 3000
-├── package.json           # Dependencies and npm scripts
-├── package-lock.json      # Locked dependency versions
-├── views/index.ejs        # Current home page
-├── public/                # Directory served as static files
-├── css/style.css          # Empty stylesheet, currently outside public/
-├── fonts/                 # Empty asset directory
-├── img/                   # Empty asset directory
-├── js/                    # Empty client-side script directory
-├── docs/                  # Project documentation
-└── documents/             # Original assignment PDF and requirements placeholder
+app.js              start of the app: routes and server
+config/             database connection and session setup
+models/             database models (User for now)
+utils/              helpers, e.g. password hashing
+scripts/            small scripts to check things
+views/              EJS pages
+views/partials/     header, footer and <head>, shared by every page
+public/             CSS and images
+docs/               documentation
+documents/          the assignment PDF
+.env.example        template for the settings file
 ```
 
-Empty directories may not appear in a fresh Git clone until they contain tracked files.
+## Getting started
 
-## Installation and local startup
-
-Prerequisites: Git, Node.js, and npm. Express 5 requires Node.js 18 or newer; the project has not yet pinned a supported runtime version for development and deployment.
-
-The repository URL still needs to be documented. Replace `<repository-url>` with the project's actual clone URL:
+You need Node.js 20.19 or newer, npm, Git and MongoDB running on your machine.
 
 ```sh
-git clone <repository-url> julekalender
+git clone https://github.com/prizrak2342-svg/julecalendar.git julekalender
 cd julekalender
 npm ci
-npm start
+cp .env.example .env
+npm run dev
 ```
 
-For an existing checkout, run `npm ci` and `npm start` from the project root. Open [http://localhost:3000](http://localhost:3000). Stop the process with `Ctrl+C`.
+Then open <http://127.0.0.1:3000>.
 
-The current app always listens on port `3000`. It does not read environment variables or connect to a database, so no `.env` file is currently required. Planned `.env` and `.env.example` configuration is described in the [deployment plan](docs/deployment.md).
+`npm run dev` restarts the server every time you save a file. Use `npm start` for a normal start. `npm run check:password` is a quick test that password hashing works.
 
-## Documentation
+## Settings (.env)
 
-| File | Contents |
-| --- | --- |
-| [Project plan](docs/project-plan.md) | Goals, audience, requirements, milestones, and current status |
-| [Database plan](docs/database.md) | Proposed MongoDB collections, fields, and relationships |
-| [Deployment plan](docs/deployment.md) | VM sizing, network, SSH, users, permissions, and PM2 |
-| [User guide](docs/user-guide.md) | Current behavior and planned student and administrator workflows |
-| [Testing](docs/testing.md) | Planned checks and actual results |
-| [Work log](docs/work-log.md) | Completed work, known problems, and solutions |
+The app reads its settings from a file called `.env`. That file is never pushed to GitHub because it holds passwords. Copy `.env.example` and fill it in:
 
-The [original assignment](documents/Julekalender.pdf) provides the project requirements. The documents distinguish those requirements from implementation proposals and verified repository behavior.
+```dotenv
+NODE_ENV=development        # use "production" on the server with HTTPS
+PORT=3000
+HOST=127.0.0.1
+MONGODB_URI=mongodb://127.0.0.1:27017/julekalender
+SESSION_SECRET=...          # at least 32 random characters
+```
 
-## Known issues and next work
+To make a good session secret:
 
-- The home page is a generic placeholder and does not display a calendar.
-- The template requests `/css/styles.css`, but the existing file is `css/style.css`, outside the served `public/` directory. Styles will need a matching path under `public/`.
-- `npm test` is a placeholder that exits with an error; there is no automated test suite.
-- Implement the calendar, database, participant identification, administrator access, submissions, and winner workflow before deployment.
-- Search and filtering in the dashboard are optional later improvements.
+```sh
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
+
+If `MONGODB_URI` or `SESSION_SECRET` is missing, the app tells you and stops.
+
+## The database
+
+Everything is saved in a MongoDB database called `julekalender`:
+
+- `users`: name, e-mail, password hash and role (student or admin). *Done.*
+- `sessions`: who is logged in. Cleared after 2 hours. *Done.*
+- `doors`: one per day, with the date, text, media and question. *Coming.*
+- `answers`: what each student answered and whether it's correct. *Coming.*
+- `winners`: the winner of each door. *Coming.*
+
+More details, including how the data moves through the app: [docs/database.md](docs/database.md).
+
+## Putting it on a Linux server
+
+The step-by-step guide is in [docs/deployment.md](docs/deployment.md). It covers the VM size, users and SSH keys, installing Node.js and MongoDB, folder permissions, PM2 and nginx.
+
+To update the server after new changes:
+
+```sh
+cd /var/www/julekalender
+git pull
+sudo -u julekalender npm ci --omit=dev
+sudo -u julekalender pm2 restart julekalender --update-env
+```
+
+## How to use it
+
+How students and teachers use the calendar, common problems and who to contact: [docs/user-guide.md](docs/user-guide.md).
+
+## Ideas for later
+
+- Search and filter answers in the admin area
+- Download answers and winners as a CSV file
+- Simple stats: how many took part each day, how many got it right
+- A countdown to the next door and some falling snow
+- E-mail to the winner
+- Automatic tests
+
+## Other documents
+
+- [Project plan](docs/project-plan.md): the steps and what is done
+- [Work log](docs/work-log.md): what I did each day
+- [Testing](docs/testing.md): what I tested and the results

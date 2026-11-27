@@ -1,0 +1,65 @@
+/* Registration form. */
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+    padding: clamp(20px, 4vw, 32px);
+    background-color: #ffffff;
+    border: 1px solid #dce7df;
+    border-radius: 12px;
+}
+
+.auth-card h1 {
+    font-size: 2rem;
+}
+
+.auth-card .auth-description {
+    margin-bottom: 24px;
+}
+
+.auth-form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.form-field label {
+    font-weight: 700;
+}
+
+.form-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #728779;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #174d35;
+    font: inherit;
+}
+
+.form-field input:focus-visible,
+.auth-button:focus-visible {
+    outline: 3px solid #174d35;
+    outline-offset: 3px;
+}
+
+.auth-button {
+    min-height: 48px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #174d35;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+}
+
+.auth-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

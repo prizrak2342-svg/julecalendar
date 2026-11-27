@@ -3,6 +3,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> · Skolens julekalender</title>
     <link rel="stylesheet" href="/css/style.css">
+    <% if (activePage === 'service' || activePage === 'register') { %>
+        <link rel="stylesheet" href="/css/log.css">
+    <% } %>
     <% if (activePage === 'calendar') { %>
         <link rel="stylesheet" href="/css/calendar.css">
     <% } %>

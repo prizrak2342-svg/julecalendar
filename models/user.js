@@ -25,16 +25,11 @@ const userSchema = new mongoose.Schema(
             select: false
         },
 
-        balance: {
-            type: Number,
-            required: true,
-            default: 0,
-            min: 0,
-            validate: {
-                validator: Number.isSafeInteger,
-                message: "Balance must be a safe integer"
-            },
-
+        role: {
+            type: String,
+            enum: ["student", "admin"],
+            default: "student",
+            required: true
         }
     },
     {

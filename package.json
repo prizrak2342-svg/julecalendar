@@ -1,10 +1,12 @@
 {
   "name": "julekalendar",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Digital advent calendar for the school (Node.js, Express, EJS, MongoDB)",
+  "main": "app.js",
   "scripts": {
     "start": "node --env-file=.env app.js",
+    "dev": "node --watch --env-file=.env app.js",
+    "check:password": "node scripts/check-password.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -22,5 +24,8 @@
   },
   "allowScripts": {
     "argon2@0.45.2": true
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

@@ -3,10 +3,12 @@ const path = require('node:path');
 const connectToDatabase = require('./config/database');
 const User = require('./models/user');
 const app = express();
+const sessionMiddleware = require("./config/session");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(sessionMiddleware); // Sessions are stored in MongoDB (collection "sessions")
 
 app.get("/", (req,res) => {
     res.render("index", { title: "Hjem", activePage: "home" });
@@ -25,13 +27,35 @@ app.get("/contact", (req, res) => {
 });
 
 app.get("/service", (req, res) => {
-    res.render("service", { title: "Tjenester", activePage: "service" });
+    res.render("service", { title: "Opprett konto", activePage: "service" });
+});
+
+app.get("/register", (req, res) => {
+    res.render("service", {
+        title: "Opprett konto",
+        activePage: "register"
+    });
 });
 
 // Keep old bookmarks working; navigation uses the routes without .ejs.
 const legacyPages = { index: "/", calendar: "/calendar", about: "/about", contact: "/contact", service: "/service" };
 for (const [page, destination] of Object.entries(legacyPages)) {
     app.get(`/${page}.ejs`, (req, res) => res.redirect(302, destination));
+}
+
+if (process.env.NODE_ENV === "development") {   
+    app.get("/session-check", (req,res, next) => {
+        req.session.visits =(req.session.visits || 0) +1;
+
+        req.session.save((error) => {
+            if (error) {
+                return next (error);
+            }
+
+            res.set("Cache-Control", "no-store");
+            res.json({visits: req.session.visits});
+        });
+    });
 }
 
 app.use((req, res) => {
@@ -44,8 +68,11 @@ async function startServer() {
 
     console.log("user model and indexes initialized.");
     
-    app.listen(3000, () => {
-        console.log("server: http://localhost:3000");
+    const port = Number(process.env.PORT) || 3000;
+    const host = process.env.HOST || "127.0.0.1";
+
+    app.listen(port, host, () => {
+        console.log(`server: http://${host}:${port}`);
     });
 }
 

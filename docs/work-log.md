@@ -1,41 +1,90 @@
-# Work log
+# Журнал роботи
 
-Record completed work and observed problems. Keep planned tasks in the [project plan](project-plan.md); do not describe them as completed here.
+Тут я записую, що зробив за кожен день, що пішло не так і як я це виправив. Плани на майбутнє лежать окремо, у [плані проєкту](project-plan.md).
 
-## 16 November 2026 — Repository review and documentation
+---
 
-### Existing work observed
+## 16 листопада: старт проєкту
 
-- The project contains an Express application in `app.js`, an EJS home-page template, and an npm startup command.
-- Dependencies and a lockfile are present. The application listens on port 3000 and serves static assets from `public/`.
-- A local Git repository exists. At review time, project files were untracked; no remote repository, commit workflow, or GitHub Project was verified.
-- The original assignment is available in `documents/Julekalender.pdf`. The previous Markdown documentation files were empty.
+Почав з того, що уважно прочитав завдання ([Julekalender.pdf](../documents/Julekalender.pdf)) і виписав собі, що саме треба здати.
 
-These observations describe the state found during this review; the original implementation dates are unknown.
+Що зробив:
 
-### Work completed in this update
+- Створив проєкт через `npm init`, поставив Express і EJS.
+- Написав `app.js`: EJS для сторінок, папка `public/` для CSS і картинок.
+- Зробив сторінки: головну (`index.ejs`), «Про нас», «Контакти», календар і сторінку, яка пізніше стала реєстрацією.
+- Написав основні стилі у `style.css`: кольори, шрифт, сітка сторінки.
+- Зверстав календар: 24 віконця у сітці, на кожному номер дня і «Desember». Стилі для нього в окремому `calendar.css`, на віконцях картинки подарунків.
+- Закинув картинки в `public/img/`: логотип, головне зображення, картинки для днів 1–24 і три подарунки.
+- Написав першу версію документації в `docs/`.
 
-- Read the assignment as requirements reference and inspected the current source files.
-- Renamed `README.MD` to `README.md` and moved the empty documentation placeholders into the requested `docs/` structure.
-- Wrote the README, project plan, database plan, deployment plan, user guide, test plan/results, and this work log.
-- Added explicit status labels to distinguish implemented behavior, assignment requirements, and proposed design choices.
-- Preserved the original PDF and `documents/requoires` placeholder in `documents/`.
-- Checked JavaScript syntax and rendered the EJS template successfully. Detailed evidence and limitations are in [testing](testing.md).
+Проблеми:
 
-### Problems and solutions
+- Сторінка не бачила стилі. Шаблон шукав `/css/styles.css`, а файл називався `style.css` і лежав не в `public/`. Перенесу і виправлю назву (зроблено 17-го).
+- Файли документації були порожні, а README називався `README.MD`. Перейменував і зробив нормальну структуру в `docs/`.
 
-| Problem | Action or proposed solution | Status |
-| --- | --- | --- |
-| Documentation files were empty and used inconsistent names | Created the requested lowercase filenames and linked the documents from the README | Resolved |
-| Stylesheet URL does not match an accessible file | Proposed fix: place the stylesheet under `public/css/` and match the template URL and filename | Open; application files were not changed |
-| `npm test` is a failing placeholder | Documented the limitation; add meaningful tests as features are implemented | Open |
-| No database or environment loading exists | Documented the proposed schema and deployment configuration | Implementation pending |
-| Participant identity, closing rules, support contact, and infrastructure details are unknown | Listed them as decisions and fields to complete before release | Pending |
+---
 
-### Next work
+## 17 листопада: спільний шаблон, база даних і паролі
 
-Implement the calendar and its date restrictions, resolve the static asset path, confirm participant rules, and connect MongoDB. Then implement protected administration, deploy to the assigned VM, and record actual user and operational test results.
+Сьогодні основне — підключити MongoDB і підготувати все для акаунтів.
 
-## Entry template
+Що зробив:
 
-For each future work session, add the date, completed changes, problems encountered, the solution attempted and its outcome, verification performed, and any remaining tasks. Link relevant issues or commits once those are available.
+- Помітив, що шапка і футер копіюються в кожну сторінку. Виніс їх у partials: `head.ejs`, `header.ejs`, `footer.ejs`. Тепер змінюю в одному місці.
+- Додав посилання «Hopp til innhold» для тих, хто користується клавіатурою, і підсвітку активного пункту меню (`aria-current`).
+- `calendar.css` тепер вантажиться тільки на сторінці календаря.
+- Зробив сторінку 404 для неіснуючих адрес.
+- Адреси тепер без `.ejs` (`/about`, а не `/about.ejs`). Старі посилання перекидають на нові.
+- Доробив вигляд календаря.
+- Створив `.env` і `.env.example`, а в `.gitignore` додав `node_modules/`, `.env` і `.DS_Store`, щоб паролі й зайві файли не потрапили на GitHub.
+- Поставив `mongoose`, `mongodb`, `argon2`, `express-session`, `connect-mongo`.
+- `config/database.js`: підключення до MongoDB. Якщо в `.env` немає адреси бази, застосунок одразу пише про це і не стартує.
+- `models/user.js`: модель користувача з ім'ям, e-mail (унікальний) і хешем пароля.
+- `utils/password.js`: хешування паролів через argon2id з налаштуваннями, які радить OWASP.
+- `scripts/check-password.js`: маленький скрипт, щоб переконатися, що правильний пароль проходить, а неправильний ні.
+- Сервер тепер спочатку чекає на базу і лише потім запускається.
+
+Проблеми:
+
+- Не хотів, щоб адреса бази і секрети опинилися в репозиторії. Рішення: вони лежать у `.env`, який Git ігнорує, а в репозиторії тільки шаблон `.env.example`.
+- Паролі в чистому вигляді зберігати не можна. Тому в базі тільки хеш argon2id, і за замовчуванням він навіть не повертається із запитів (`select: false`).
+
+---
+
+## 18 листопада: перший коміт
+
+Зробив перший коміт `Add initial Julekalender project` і запушив на GitHub (`prizrak2342-svg/julecalendar`).
+
+---
+
+## 24 листопада: сесії
+
+- Написав `config/session.js`. Сесії зберігаються в MongoDB (колекція `sessions`), тому не зникають після перезапуску сервера.
+- Cookie налаштував безпечно: недоступні з JavaScript (`httpOnly`), `sameSite=lax`, на продакшені тільки через HTTPS, живуть 2 години.
+- Якщо `SESSION_SECRET` коротший за 32 символи, застосунок не запуститься.
+- Додав тестову адресу `/session-check` (працює тільки в режимі розробки), щоб побачити, що сесія справді зберігається.
+
+---
+
+## 25 листопада: форма реєстрації
+
+- Зробив форму на `/register`: ім'я, e-mail, пароль і повтор пароля. Усі поля з підписами і обмеженнями довжини.
+- Стилі форми в окремому `log.css`.
+- Кнопку поки вимкнув, бо сервер ще не вміє приймати цю форму.
+
+---
+
+## 27 листопада: виправлення помилок і нова документація
+
+Пройшовся по проєкту і знайшов кілька помилок, які заважали б іншим запустити проєкт.
+
+- `.env.example` був зламаний: коментарі через `//`, яких `.env` не розуміє, і не було `MONGODB_URI`. Хто склонував би проєкт, просто не зміг би його запустити. Переписав з поясненнями до кожної змінної.
+- Порт тепер береться з `.env` (`PORT`, `HOST`). На сервері це треба, щоб Node.js сидів за nginx і не стирчав назовні.
+- У моделі користувача прибрав поле `balance`, яке тут ні до чого, і додав `role`: `student` або `admin`.
+- Картинки подарунків у календарі вибиралися через `Math.random()` і мінялися при кожному оновленні сторінки. Тепер картинка залежить від номера дня.
+- Перейменував папку `utlits` на `utils`.
+- У `package.json`: правильний `main`, команди `npm run dev` і `npm run check:password`, мінімальна версія Node 20.19 (менше Mongoose 9 не підтримує).
+- Переписав README і всю документацію, щоб вона описувала те, що є насправді.
+
+Перевірив: усі сторінки відкриваються, база підключається, перевірка паролів працює. Деталі в [тестуванні](testing.md).
