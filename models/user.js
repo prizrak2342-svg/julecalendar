@@ -30,8 +30,24 @@ const userSchema = new mongoose.Schema(
             enum: ["student", "admin"],
             default: "student",
             required: true
-        }
+        },
+
+        coins: {
+            type: Number,
+            default: 0,
+            min: 0, // the balance can never go below zero
+            validate: {
+                validator: Number.isInteger,
+                message: "Coins must be a whole number"
+            }
+        },
+
+        openedGifts: [{       // doors whose gift this user has bought
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Door"
+        }]
     },
+
     {
         timestamps: true,
     }
