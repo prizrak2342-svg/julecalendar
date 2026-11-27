@@ -14,7 +14,7 @@
             </div>
             <ol class="calendar-grid">
                 <% for (let day = 1; day <= 24; day++) { %>
-                    <% const gift = Math.floor(Math.random() * 3) + 1; %>
+                    <% const gift = (day % 3) + 1; /* same picture for a door on every visit */ %>
 
                     <li class="calendar-door gift-<%= gift %>">
                         <span class="door-number"><%= day %></span>

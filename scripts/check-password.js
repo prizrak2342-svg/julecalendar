@@ -3,7 +3,7 @@
 const {
     hashPassword,
     verifyPassword
-} = require('../utlits/password');
+} = require('../utils/password');
 
 async function checkPassword () {
     const password = "Demo-only-password-2026";
