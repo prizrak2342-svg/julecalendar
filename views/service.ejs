@@ -4,10 +4,74 @@
 <body>
     <%- include('partials/header') %>
     <main id="main-content" class="section" tabindex="-1">
-        <div class="container">
-            <h1>Tjenester</h1>
-            <!-- Page content will be added later. -->
-        </div>
+        <section class="auth-card" aria-labelledby="register-title">
+            <h1 id="register-title">Opprett konto</h1>
+            <p class="auth-description">
+                Registrer deg til skolens julekalender.
+            </p>
+
+            <form class="auth-form" action="/register" method="post">
+                <div class="form-field">
+                    <label for="name">Navn</label>
+
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        autocomplete="name"
+                        minlength="2"
+                        maxlength="80"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-field">
+                    <label for="email">E-post</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Passord</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        minlength="15"
+                        maxlength="128"
+                        aria-describedby="password-help"
+                        required
+                    >
+                    <small id="password-help">
+                        Bruk mellom 15 og 128 tegn.
+                    </small>
+                </div>
+                <div class="form-field">
+                    <label for="confirmPassword">Gjenta passord</label>
+                    <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        autocomplete="new-password"
+                        minlength="15"
+                        maxlength="128"
+                        required
+                    >
+                </div>
+                <!-- Enable submission when the registration handler is ready. -->
+                <button class="auth-button" type="submit" disabled>
+                    Opprett konto
+                </button>
+            </form>
+        </section>
     </main>
     <%- include('partials/footer') %>
 </body>
