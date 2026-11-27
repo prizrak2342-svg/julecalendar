@@ -4,11 +4,19 @@ const connectToDatabase = require('./config/database');
 const User = require('./models/user');
 const app = express();
 const sessionMiddleware = require("./config/session");
+const { loadUser } = require("./middleware/auth");
+const authRoutes = require("./routes/auth");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
+
+// The order matters: every request goes through these from top to bottom.
+app.use(express.static(path.join(__dirname, "public"))); // CSS and images are answered here and stop
+app.use(express.urlencoded({ extended: false, limit: "10kb" })); // reads form data into req.body
 app.use(sessionMiddleware); // Sessions are stored in MongoDB (collection "sessions")
+app.use(loadUser); // req.user and currentUser for the views
+
+app.use(authRoutes); // /register, /login, /logout
 
 app.get("/", (req,res) => {
     res.render("index", { title: "Hjem", activePage: "home" });
@@ -26,19 +34,11 @@ app.get("/contact", (req, res) => {
     res.render("contact", { title: "Kontakt", activePage: "contact" });
 });
 
-app.get("/service", (req, res) => {
-    res.render("service", { title: "Opprett konto", activePage: "service" });
-});
-
-app.get("/register", (req, res) => {
-    res.render("service", {
-        title: "Opprett konto",
-        activePage: "register"
-    });
-});
+// The old "Profil" page is now the registration page
+app.get("/service", (req, res) => res.redirect(301, "/register"));
 
 // Keep old bookmarks working; navigation uses the routes without .ejs.
-const legacyPages = { index: "/", calendar: "/calendar", about: "/about", contact: "/contact", service: "/service" };
+const legacyPages = { index: "/", calendar: "/calendar", about: "/about", contact: "/contact", service: "/register" };
 for (const [page, destination] of Object.entries(legacyPages)) {
     app.get(`/${page}.ejs`, (req, res) => res.redirect(302, destination));
 }

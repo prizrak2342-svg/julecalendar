@@ -8,8 +8,19 @@
             <li><a href="/"<% if (activePage === 'home') { %> aria-current="page"<% } %>>Hjem</a></li>
             <li><a href="/about"<% if (activePage === 'about') { %> aria-current="page"<% } %>>Om oss</a></li>
             <li><a href="/contact"<% if (activePage === 'contact') { %> aria-current="page"<% } %>>Kontakt</a></li>
-            <li><a href="/service"<% if (activePage === 'service') { %> aria-current="page"<% } %>>Profil</a></li>
             <li><a href="/calendar"<% if (activePage === 'calendar') { %> aria-current="page"<% } %>>Julekalender</a></li>
+
+            <% if (currentUser) { %>
+                <%# currentUser comes from middleware/auth.js (res.locals) %>
+                <li class="nav-coins"><span aria-hidden="true">🪙</span> <%= currentUser.coins %> mynter</li>
+                <li>
+                    <form action="/logout" method="post">
+                        <button class="nav-button" type="submit">Logg ut (<%= currentUser.name %>)</button>
+                    </form>
+                </li>
+            <% } else { %>
+                <li><a href="/login"<% if (activePage === 'login' || activePage === 'register') { %> aria-current="page"<% } %>>Logg inn</a></li>
+            <% } %>
         </ul>
     </nav>
 </header>

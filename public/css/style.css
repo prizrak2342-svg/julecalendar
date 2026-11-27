@@ -297,3 +297,30 @@ body > main {
     }
 }
 
+
+/* Coins and the log-out button in the menu */
+.nav-coins {
+    padding: 12px;
+    color: #174d35;
+    font-weight: 700;
+}
+
+.nav-button {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: #174d35;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background-color: #e8f1eb;
+}
+
+.nav-button:focus-visible {
+    outline: 3px solid #174d35;
+    outline-offset: 4px;
+}

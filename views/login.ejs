@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nb">
+<%- include('partials/head') %>
+<body>
+    <%- include('partials/header') %>
+    <main id="main-content" class="section" tabindex="-1">
+        <section class="auth-card" aria-labelledby="login-title">
+            <h1 id="login-title">Logg inn</h1>
+            <p class="auth-description">
+                Logg inn for å svare på spørsmål og samle mynter.
+            </p>
+
+            <% if (error) { %>
+                <p class="form-error" role="alert"><%= error %></p>
+            <% } %>
+
+            <form class="auth-form" action="/login" method="post">
+                <div class="form-field">
+                    <label for="email">E-post</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        maxlength="254"
+                        value="<%= values.email || '' %>"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Passord</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        maxlength="128"
+                        required
+                    >
+                </div>
+
+                <button class="auth-button" type="submit">Logg inn</button>
+            </form>
+
+            <p class="auth-switch">Ny her? <a href="/register">Opprett konto</a></p>
+        </section>
+    </main>
+    <%- include('partials/footer') %>
+</body>
+</html>
