@@ -1,52 +1,84 @@
-# Database plan
+# Database
 
-**Status:** proposed MongoDB schema; no database connection, driver, collections, indexes, or models are implemented yet.
+All data lives in one MongoDB database called `julekalender`. The app connects to it using `MONGODB_URI` from `.env` (see [config/database.js](../config/database.js)). I use Mongoose to describe what each document should look like and to check the data before it's saved.
 
-## Collections and fields
+Right now `users` and `sessions` exist. `doors`, `answers` and `winners` are next.
 
-All `_id` and referenced identifiers below use MongoDB `ObjectId`. Dates use BSON Date values stored as UTC instants. The application will interpret calendar opening times in `Europe/Oslo`.
+## How it fits together
 
-| Collection | Proposed fields | Purpose |
-| --- | --- | --- |
-| `users` | `_id`, `participantKey` (unique string), `displayName` (string), `role` (`student` or `admin`), `createdAt` (Date) | Identify participants and administrators. Authentication details depend on the identity method chosen before implementation. |
-| `doors` | `_id`, `calendarYear` (integer), `day` (integer 1–24), `opensAt` (Date), `closesAt` (Date, optional until closing rules are agreed), `title` (string), `text` (string), `media` (array of `{type, url, altText}`), `question` (string), `published` (boolean), `createdAt`, `updatedAt` (Date) | Teacher-provided content and availability for each day |
-| `answers` | `_id`, `doorId`, `userId`, `answerText` (string), `submittedAt` (Date), `reviewStatus` (`pending`, `correct`, `incorrect`), `reviewedBy` (user ID, optional), `reviewedAt` (Date, optional) | Student submissions and administrator assessment |
-| `winners` | `_id`, `doorId`, `userId`, `answerId`, `selectedBy` (user ID), `selectedAt` (Date), `publishedAt` (Date, optional) | A recorded draw result and publication state |
+```text
+users ──< answers >── doors
+  │          │          │
+  │          └── winners ┘
+  └──< sessions
+```
 
-`participantKey` represents the agreed school identity, not a secret. Do not store plaintext passwords; the authentication design must specify secure credential handling if local accounts are chosen. Public responses must expose only the fields intended for students.
+- One student can answer many doors, but each door only once.
+- One door gets many answers, but only one winner.
+- A winner always points back to a correct answer, and to the student and door it belongs to.
 
-## Relationships
+The diagram from mongomodeler.com will be added here as `database-schema.png`.
 
-- One user can submit answers for many doors; each answer belongs to one user and one door.
-- One door can have many answers and, under the proposed rules, at most one winner.
-- A winner references a correct answer and its user and door. All three references must agree.
-- `reviewedBy` and `selectedBy` reference users with the administrator role.
+## The collections
 
-MongoDB references do not enforce these relationships automatically. The application must validate referenced records and protect answer review and winner selection against conflicting updates. Prefer archiving doors and users with participation history to deleting referenced records.
+### users (done)
 
-## Proposed indexes and validation
+Defined in [models/user.js](../models/user.js).
 
-| Collection | Index or rule | Reason |
-| --- | --- | --- |
-| `users` | Unique `participantKey` | Prevent duplicate identities |
-| `doors` | Unique compound index on `calendarYear`, `day` | One door per day in each calendar |
-| `answers` | Unique compound index on `doorId`, `userId` | Enforce the proposed one-answer-per-door rule |
-| `answers` | Index on `doorId`, `reviewStatus` | Support review and eligible-answer queries |
-| `winners` | Unique `doorId` | Prevent duplicate winners for a door |
+- `name`: 2–80 characters. This is the name shown if you win.
+- `email`: unique, saved in lowercase. Never shown to other students.
+- `passwordHash`: the argon2id hash. The real password is never stored, and the hash isn't even loaded unless the code asks for it.
+- `role`: `student` (default) or `admin`.
+- `createdAt` and `updatedAt`: filled in automatically.
 
-Validate required fields, identifier types, day ranges, text lengths, media types and URLs, and role/status values. Determine practical text limits during implementation. Enforce publication and opening times on the server before returning content or accepting an answer; hiding a button is insufficient.
+### sessions (done)
 
-## Planned data flow
+Handled by connect-mongo ([config/session.js](../config/session.js)). It remembers who is logged in. A session ends after 2 hours and MongoDB deletes it by itself.
 
-1. The calendar queries published door summaries without revealing future content.
-2. Opening a door checks its availability before returning its content and any published winner.
-3. Submitting an answer validates identity, availability, content, and duplicate rules before inserting the answer with `pending` status.
-4. An authenticated administrator reviews the answer and records the result and reviewer.
-5. A draw selects randomly from eligible correct answers for the door and saves one winner. With one answer per user, each eligible participant has one entry. Save the result once so refreshing cannot trigger another draw.
-6. A past door reads the published winner's permitted display name, or reports that the winner has not yet been announced.
+### doors (coming)
 
-## Privacy and remaining work
+- `year` and `day` (1–24). There can only be one door per day.
+- `opensAt`: midnight Norwegian time on that day, saved in UTC.
+- `title`, `text` and `question`.
+- `media`: a list of pictures and videos, each with a link and a description (`alt`) for pictures.
+- `correctAnswer`: a note for teachers. Never sent to students.
+- `published`: only published doors are shown.
 
-Keep collection access restricted to the application and authorized operators. Store the MongoDB connection string outside version control. Agree with the school on identity fields, public winner names, retention, and deletion procedures before collecting student data.
+### answers (coming)
 
-Next implementation work: confirm identity and participation rules, create the schema diagram, choose a MongoDB driver or modeling library, implement validation and indexes, and test persistence, duplicates, permissions, and backup restoration. See the [test plan](testing.md).
+- `door` and `user`: which door and which student. Only one answer per pair.
+- `text`: the answer, up to 1000 characters.
+- `status`: `pending`, `correct` or `wrong`. Starts as `pending`.
+- `reviewedBy`: which teacher checked it.
+
+### winners (coming)
+
+- `door`: only one winner per door.
+- `user` and `answer`: who won, and with which answer.
+- `drawnBy` and `drawnAt`: which teacher pressed the button, and when.
+
+## Indexes
+
+Indexes make lookups fast and stop bad data:
+
+- `users.email` is unique, so one account per e-mail. *(done)*
+- `doors.year + day` is unique, so one door per day.
+- `answers.door + user` is unique, so a double click can't save two answers.
+- `answers.door + status` makes it fast to find the correct answers for the draw.
+- `winners.door` is unique, so there's never more than one winner.
+
+## What happens step by step
+
+1. **Calendar page:** the server loads the doors and decides for each one whether it's locked, open today or in the past. Locked doors are sent without their content, so you can't peek in the page source.
+2. **Opening a door** (`/calendar/5`): the server checks the time again. Typing the address for a future door just shows "not open yet".
+3. **Answering:** the server checks that you're logged in, the door is open and the answer isn't empty or too long. Then it saves the answer as `pending`.
+4. **Checking:** a teacher marks each answer `correct` or `wrong`.
+5. **Draw:** the server picks one random correct answer (with MongoDB's `$sample`) and saves it as the winner. If a winner already exists, nothing changes.
+6. **Past doors** show the winner's name, or a note that the winner hasn't been picked yet.
+
+## Personal data
+
+- Saved about each student: name, e-mail and their answers. Passwords only as hashes.
+- Only the winner's name is public. E-mail addresses are only visible to admins.
+- On the server MongoDB only listens on `127.0.0.1` and needs a password.
+- When the calendar is over (January 2027), users and answers should be deleted, or exported if the school wants to keep them.

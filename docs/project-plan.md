@@ -1,60 +1,60 @@
-# Project plan
+# План проєкту
 
-Last updated: 16 November 2026.
+Оновлено 27 листопада 2026.
 
-## Goal and audience
+## Що будую
 
-Build a digital school advent calendar that students can use on phones and computers. Teachers supply text, images, videos, questions, and activities. The project covers the technical presentation, answer handling, administration, and operation of that content.
+Шкільний різдвяний календар, який працює і на телефоні, і на комп'ютері. Кожного дня з 1 по 24 грудня відкривається нове віконце. Моя частина — все технічне: показ віконець, відповіді учнів, адмінка, сервер на Linux і документація.
 
-Students need clear door availability and submission feedback. Teachers and administrators need content management, participant and answer overviews, answer assessment, and winner selection. Operators need repeatable installation, access, deployment, and troubleshooting documentation.
+Головний дедлайн: **1 грудня** календар має працювати на сервері, бо в цей день відкривається перше віконце.
 
-## Requirements
+## Що я вирішив
 
-The following requirements come from the [assignment](../documents/Julekalender.pdf); they describe the target solution, not completed features.
+- **24 віконця**, з 1 по 24 грудня 2026.
+- Віконце відкривається **о 00:00 за норвезьким часом**. У базі час зберігається в UTC, тому неважливо, в якому часовому поясі стоїть сервер.
+- Учні **реєструються самі**: ім'я, e-mail і пароль. Пароль зберігається тільки як хеш.
+- Дві ролі: **student** і **admin**. Адміна призначаю я вручну, через форму стати адміном не можна.
+- **Одна відповідь** на одне віконце від одного учня.
+- **Переможець** вибирається випадково серед правильних відповідей, один на віконце. Якщо оновити сторінку, переможець не зміниться.
+- Публічно показується **тільки ім'я** переможця, e-mail ніколи.
+- Сайт норвезькою, документація для інших людей англійською, мої робочі нотатки українською.
 
-| Area | Acceptance criteria | Status |
-| --- | --- | --- |
-| Calendar | Show doors; prevent opening future doors, including through direct requests | Planned |
-| Door content | Display teacher-provided text, images, video, and questions or activities | Planned |
-| Participation | Accept and validate answers, save them in MongoDB, and show clear feedback | Planned |
-| Past doors | Show the winner's name when opening a previous date; show a clear pending state until a winner exists | Planned |
-| Administration | Show participants and submissions; mark answers correct or incorrect; manage content | Planned |
-| Winners | Randomly select a winner from eligible participants with correct answers | Planned |
-| Usability | Provide a festive, responsive interface with accessible navigation, contrast, labels, and feedback | Planned |
-| Database | Use MongoDB and explain data storage and retrieval; create a model diagram using the assignment's suggested modeling tool | Plan documented; implementation pending |
-| Operation | Deploy on Linux with PM2, MongoDB configuration, `.env` and `.env.example` | Planned |
-| VM access | Document sizing, network configuration, users, roles, permissions, and SSH access for the student developer and all teachers | Plan documented; configuration pending |
-| Collaboration workflow | Use a public repository, descriptive commits, issues, branches, pull requests, and a project board | Local repository present; remaining setup unverified |
-| Documentation | Provide installation, deployment, user support, test results, work log, and the final reflection note | Documentation started; reflection pending |
-| Optional features | Search and filter submitted answers; other justified dashboard improvements | Backlog |
+## Кроки
 
-## Proposed decisions to confirm before implementation
+| # | Що робимо | Коли вважаю готовим | Стан |
+| --- | --- | --- | --- |
+| 1 | Основа: сервер, сторінки, CSS, MongoDB, модель User, паролі, сесії | Застосунок стартує, підключається до бази, всі сторінки відкриваються | ✅ 16–25 листопада |
+| 2 | Виправити помилки і переписати документацію | Проєкт можна склонувати і запустити за README | ✅ 27 листопада |
+| 3 | GitHub Project, issues, гілки, pull requests | Є дошка і задачі, далі працюю тільки через PR | ⏳ наступний |
+| 4 | Моделі `Door`, `Answer`, `Winner` і скрипт, що заповнює базу 24 віконцями | `npm run seed` створює віконця | ⬜ |
+| 5 | Логіка календаря: закрите / відкрите / минуле віконце, сторінка `/calendar/:day` | Майбутнє віконце не відкривається навіть через пряме посилання | ⬜ |
+| 6 | Акаунти: реєстрація, вхід, вихід, перевірка ролі, захист форм | Учень не може зайти в адмінку | ⬜ |
+| 7 | Відповіді: форма у віконці, перевірка, повідомлення «Збережено» | Друга відповідь на те саме віконце не проходить | ⬜ |
+| 8 | Адмінка: відповіді (правильно/неправильно), учасники, вміст, жеребкування | Вчитель може вибрати переможця | ⬜ |
+| 9 | Сервер на Linux: користувачі, SSH-ключі, Node, MongoDB, pm2, nginx | Сайт працює і після перезавантаження VM | ⬜ починаю паралельно |
+| 10 | Свої фічі: пошук і фільтр відповідей, статистика, відлік до наступного віконця | За можливості | 💡 |
+| 11 | Здача: схема БД на mongomodeler, тести, інструкція, рефлексія | Усе лежить у репозиторії | ⬜ |
 
-- Use 24 doors for the selected December calendar year. Store explicit opening timestamps and apply the school's `Europe/Oslo` timezone when calculating them.
-- Identify participants consistently and allow one answer per participant per door. Confirm whether answers may be edited and when participation closes.
-- Decide how students identify themselves and how administrator accounts are authenticated and provisioned.
-- Agree on winner eligibility, when winners become public, and which display names may be published.
-- Confirm the content delivery format, support contact, retention period, deployment address, and submission deadline with the school.
+✅ готово · ⏳ в роботі · ⬜ заплановано · 💡 якщо буде час
 
-These are design proposals or unresolved choices, not extra requirements claimed from the assignment.
+## Що треба здати
 
-## Milestones
+- [ ] Робочий календар на Node.js, Express і EJS
+- [ ] Базу MongoDB з даними
+- [ ] Адмінку
+- [ ] Git-репозиторій з нормальною історією комітів, гілками і PR
+- [x] README з документацією (доповнюю по ходу)
+- [ ] Розгортання на Linux-сервері
+- [ ] GitHub Project з плануванням
+- [ ] Схему бази з mongomodeler.com
+- [ ] Рефлексію про міждисциплінарний тиждень
 
-No delivery dates have been confirmed. Complete the milestones in this order and update the project board as work progresses.
+## Як веду роботу в GitHub
 
-| Milestone | Completion evidence | Status |
-| --- | --- | --- |
-| 1. Foundation and planning | Basic server, documentation structure, requirements and database plan | In progress |
-| 2. Calendar interface | Responsive door overview and server-side date restrictions | Not started |
-| 3. Database and participation | Persistent doors, participants, validated submissions, identity rules | Not started |
-| 4. Administration | Protected content management, answer review, and winner selection | Not started |
-| 5. Linux deployment | Documented VM, SSH access, environment, PM2 restart and reboot checks | Not started |
-| 6. Verification and handover | Recorded functional/accessibility/operational tests, final user guide, reflection | Not started |
+- Дошка з трьома колонками: **Заплановано**, **В роботі**, **Готово**.
+- Кожна задача — окреме issue з міткою кроку, наприклад `step-5 calendar`.
+- Кожна фіча в окремій гілці: `feature/door-model`, `feature/login` тощо.
+- Кожна гілка вливається через pull request, а в описі пишу `Closes #номер`, щоб issue закрилось само.
+- Коміти короткі й по суті англійською: `Add Door model with unique day index`.
 
-## Current status and work tracking
-
-The app renders `views/index.ejs` at `/` and listens on port 3000. Only Express and EJS are declared application dependencies. There are no database models, authentication routes, calendar features, or administrator screens.
-
-Use project-board columns such as **Backlog**, **In progress**, **Review**, and **Done**. Create issues from the acceptance criteria above and link branches and pull requests to them. Add the actual repository and project-board URLs here after setup; neither has been verified during this documentation update.
-
-Record evidence in [testing](testing.md) and dated progress in the [work log](work-log.md). Main dependencies are teacher-supplied content, the school network/VM allocation, and the participant and winner rules.
+Що вже зроблено, записано в [журналі роботи](work-log.md), а результати перевірок у [тестуванні](testing.md).
